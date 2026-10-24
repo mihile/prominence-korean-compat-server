@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "give_my_trident_back",
+  "version": "1.0.1+1.20.1",
+  "name": "give my trident back",
+  "description": "Rescues real thrown weapons from the void using their original pickup behavior.",
+  "environment": "server",
+  "license": "MIT",
+  "entrypoints": { "main": ["dev.mihile.tridentback.GiveMyTridentBack"] },
+  "mixins": ["give_my_trident_back.mixins.json"],
+  "depends": { "fabricloader": ">=0.16.0", "minecraft": "1.20.1", "java": ">=17", "fabric-api": "*" }
+}

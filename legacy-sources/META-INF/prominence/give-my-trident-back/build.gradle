@@ -1,0 +1,20 @@
+plugins { id 'fabric-loom' version '1.10.4' }
+version = '1.0.1+1.20.1'
+group = 'dev.mihile'
+base { archivesName = 'give-my-trident-back' }
+repositories { mavenCentral() }
+dependencies {
+    minecraft 'com.mojang:minecraft:1.20.1'
+    mappings loom.officialMojangMappings()
+    modImplementation 'net.fabricmc:fabric-loader:0.17.2'
+    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.92.6+1.20.1'
+    testImplementation 'junit:junit:4.13.2'
+}
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') { expand version: project.version }
+}
+tasks.withType(JavaCompile).configureEach { options.release = 17; options.encoding = 'UTF-8' }
+java { withSourcesJar() }
+jar { from('LICENSE') }
+test { useJUnit() }

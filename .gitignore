@@ -1,0 +1,9 @@
+build/
+verification/
+classpath.json
+*.args
+*.log
+*.pk8
+*.pem
+*.key
+__pycache__/
