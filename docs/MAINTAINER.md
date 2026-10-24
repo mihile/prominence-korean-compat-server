@@ -36,6 +36,8 @@ python tools/publish.py --build-dir build --signing-key PRIVATE_KEY_OUTSIDE_REPO
 
 ## 복구 규칙과 범위
 
+서버를 켜기 전에 관리자가 미리 적용할 때는 서버와 시작 스크립트를 모두 종료한 상태에서 검증한 새 JAR을 **mods 밖의 임시 runner 경로**에 두고 `java -cp RUNNER_JAR local.prominence.serverupdate.UpdateEngine --prepare SERVER_ROOT`를 사용합니다. `--prepare`는 적용·백업 후 실제 기동 시도를 기록하지 않습니다. 기본 모드(서버 root 인자만 지정)는 바로 다음 Minecraft 실행을 전제로 시도를 기록하므로 적용만 해두는 작업에 쓰면 안 됩니다. 첫 실제 시작 훅이 대기 준비본을 유지하고 시도를 기록합니다. 정상 확인 영수증을 관리자가 대신 작성하지 않습니다.
+
 트랜잭션은 기존 JAR 백업·fsync·해시 검증 → 복구 기록을 먼저 기록 → 새 canonical 이름으로 교체 → 옛 이름 제거 순서입니다. 무작위 실행 토큰과 build/해시가 맞고 `SERVER_STARTED` 후 60초 이상 틱이 진행돼야 정상 확인합니다. 실패 시 이전 JAR을 복구하고 같은 build를 차단합니다. 더 높은 build로만 자동 진행합니다.
 
 서명 오류/연결 실패는 재부팅을 유발하지 않습니다. 기존 JAR로 시작하며 확인 실패 시 5분 쿨다운합니다. 판단 불가 상태에서는 launcher 전체를 종료 코드20으로 중단합니다. 설정·월드·다른 JAR까지 자동 롤백하거나, 오래된 사용자 삭제 모드를 되살리는 작업을 포함하지 않습니다.

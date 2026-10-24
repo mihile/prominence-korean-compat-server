@@ -22,6 +22,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\Install-ServerUpdater.ps1
 - `mods/prominence-korean-compat-server-1.0.0.jar`: 현재 서버 패치. 수동 교체는 서버와 시작 스크립트를 모두 종료한 상태에서만 합니다.
 - `.prominence-server-update/backups/<SHA256>.jar`: 이름 변경 전/업데이트 전 원본.
 - `.prominence-server-update/pending.properties`: 교체·최초 기동 확인 대기 기록. **문제 해결 목적으로 임의 삭제하지 마세요.**
+- 준비가 완료됐지만 아직 서버를 켜지 않았다면 `ready=true`만 기록됩니다. 실제 다음 시작 직전에 `attempted=true`가 기록되며, 그 뒤 정상 확인 없이 종료된 경우에만 기동 실패로 복구합니다.
 - `.prominence-server-update/healthy.properties`: 해당 실행의 무작위 토큰·빌드·해시를 확인한 기동 영수증. 다음 시작 전 반영·정리됩니다.
 - `.prominence-server-update/ledger.properties`: 정상 확인한 최대 빌드와 실패해 차단한 빌드.
 - `.prominence-server-update/updater.log`: 업데이트·복구·안전 중단 로그. 1MiB가 넘으면 이전 로그 하나를 남깁니다.

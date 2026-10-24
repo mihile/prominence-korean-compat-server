@@ -3,8 +3,8 @@
 Minecraft/서버/월드를 실행하지 않는 검증입니다. 운영 서버의 현재 JVM과 설치 JAR은 유지합니다.
 
 - 기존 누적 서버 클래스 **98개** 바이트 보존. 기존 믹신/가드/진입점과 Testosterone 수정 보존.
-- 새 Java17 클래스 **8개 / 57메서드** ASM BasicVerifier 통과. 서버 lifecycle adapter는 현재 Fabric/Minecraft intermediary classpath로 컴파일.
-- 독립 Java 검사 **97개**: Ed25519 서명, 잘못된 채널·팩·MC·파일명·키, SHA/크기/빌드 불일치, 네트워크 실패/5분 쿨다운, 오프라인 서명 번들, build 증가/최대 정상 빌드, 동일·실패 build 재설치 억제, 초기 이름 이전·후속 교체의 강제 중단 지점, 복구 중 재중단, 수동 교체·손상 백업·중복 파일·빈 journal·동시 helper 중단.
+- 새 Java17 클래스 **8개 / 60메서드** ASM BasicVerifier 통과. 서버 lifecycle adapter는 현재 Fabric/Minecraft intermediary classpath로 컴파일.
+- 독립 Java 검사 **118개**: Ed25519 서명, 잘못된 채널·팩·MC·파일명·키, SHA/크기/빌드 불일치, 네트워크 실패/5분 쿨다운, 오프라인 서명 번들, build 증가/최대 정상 빌드, 동일·실패 build 재설치 억제, 초기 이름 이전·후속 교체의 강제 중단 지점, 복구 중 재중단, 수동 교체·손상 백업·중복 파일·빈 journal·동시 helper 중단. 추가로 미실행 준비본 유지·반복 준비·첫 실제 기동 시도 기록·그 뒤 실패 복구, 준비/시도 경계의 중단, build1의 기존 journal 호환을 검증.
 - Windows PowerShell 검사 **17개**: 실제 시작 스크립트 비실행 파싱/멱등 설치, 실제 Java preflight 통한 이름 이전·기동 토큰 전달·확인 기록 반영, runner 정리, 시작 루프 전체 수명 잠금, 사용 중 서버 포트 차단, Windows 실제 delete-sharing 잠금에서 안전 중단 후 원본 SHA 복구·실패 build 재시도 차단.
 - 공개 릴리스 게시 후 실제 GitHub 다운로드 파일과 서명 피드·체크섬을 별도로 다시 검증합니다. 작은 fixture에서 공개 feed→교체→기동 영수증 모의→재확인/재설치 억제와 미확인 기동 복구를 검증합니다.
 

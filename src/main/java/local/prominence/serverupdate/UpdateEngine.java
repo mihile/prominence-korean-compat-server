@@ -92,10 +92,22 @@ public final class UpdateEngine {
     }
     /** Exclusive lock protects two helpers; start hook holds a separate lock for the entire server lifetime. */
     public void beforeLaunch() throws Exception {
+        beforeLaunch(true);
+    }
+    /** Apply while stopped, without counting the preparation itself as an attempted Minecraft startup. */
+    public void prepareOnly() throws Exception {
+        beforeLaunch(false);
+    }
+    private void beforeLaunch(boolean attemptLaunch) throws Exception {
         try (FileChannel c = FileChannel.open(state("update.lock"), StandardOpenOption.CREATE, StandardOpenOption.WRITE);
                 FileLock lock = c.tryLock()) {
             if (lock == null) throw new IOException("Another updater is running");
             if (recover()) return;
+            if (Files.exists(state("pending.properties"))) {
+                if (attemptLaunch) armPending();
+                log("Prepared server update retained; " + (attemptLaunch ? "first startup attempt armed." : "no Minecraft startup attempted."));
+                return;
+            }
             Path current = installed();
             long build = number(identity(current, current.getFileName().toString().equals(Release.LEGACY)), "build", 0);
             Properties ledger = readState("ledger.properties"), config = readState("config.properties");
@@ -140,6 +152,7 @@ public final class UpdateEngine {
                 if (Files.exists(state("pending.properties"))) recover();
                 log("Update preparation/apply failed; previous JAR retained. " + e.getClass().getSimpleName() + ": " + e.getMessage());
             } finally { Files.deleteIfExists(incoming); }
+            if (attemptLaunch && Files.exists(state("pending.properties"))) armPending();
         }
     }
     private void install(Path old, String oldHash, Path incoming, Release r) throws Exception {
@@ -158,6 +171,16 @@ public final class UpdateEngine {
             Files.delete(old);
         }
         hook.at("removeLegacy");
+        p.setProperty("ready", "true");
+        FilesEx.write(state("pending.properties"), p);
+        hook.at("ready");
+    }
+    private void armPending() throws Exception {
+        Properties p = readState("pending.properties");
+        if (!"true".equals(p.getProperty("ready"))) throw new IOException("Update is not ready for startup");
+        p.setProperty("attempted", "true");
+        FilesEx.write(state("pending.properties"), p);
+        hook.at("attempt");
     }
     /** @return true when rollback occurred; don't fetch/reinstall anything on that launch. */
     public boolean recover() throws Exception {
@@ -170,6 +193,8 @@ public final class UpdateEngine {
         if (!Set.of(Release.FILE, Release.LEGACY).contains(oldName) || !FilesEx.required(p, "token").matches("[a-f0-9-]{36}"))
             throw new IOException("Invalid recovery journal");
         long build = number(p, "build", -1); if (build < 1) throw new IOException("Invalid recovery build");
+        for (String flag : List.of("ready", "attempted"))
+            if (p.containsKey(flag) && !"true".equals(p.getProperty(flag))) throw new IOException("Invalid journal " + flag);
         Path target = path("mods/" + Release.FILE), old = path("mods/" + oldName);
         Properties ledger = readState("ledger.properties"), healthy = readState("healthy.properties");
         boolean targetNew = Files.exists(target) && FilesEx.hash(target).equals(newHash);
@@ -180,6 +205,13 @@ public final class UpdateEngine {
             FilesEx.write(state("ledger.properties"), ledger);
             Files.delete(state("pending.properties")); Files.deleteIfExists(state("healthy.properties"));
             log("Confirmed healthy server build " + build + "."); return false;
+        }
+        if (targetNew && "true".equals(p.getProperty("ready")) && !p.containsKey("attempted") &&
+                (old.equals(target) || !Files.exists(old))) {
+            Path backup = state("backups/" + oldHash + ".jar");
+            if (!Files.exists(backup) || !FilesEx.hash(backup).equals(oldHash)) throw new IOException("Prepared update backup is missing or damaged");
+            if (number(identity(target, false), "build", 0) != build) throw new IOException("Prepared update build mismatch");
+            return false;
         }
         // Never overwrite an administrator's unrelated manual replacement while recovering.
         if (Files.exists(target) && !targetNew && !(old.equals(target) && FilesEx.hash(target).equals(oldHash)))
@@ -215,9 +247,10 @@ public final class UpdateEngine {
     public static void main(String[] args) {
         UpdateEngine engine = null;
         try {
-            if (args.length != 1) throw new IllegalArgumentException("Expected server root only");
-            engine = new UpdateEngine(Path.of(args[0]), Release.publicKey(), new Transport());
-            engine.beforeLaunch();
+            boolean prepare = args.length == 2 && args[0].equals("--prepare");
+            if (args.length != 1 && !prepare) throw new IllegalArgumentException("Expected [--prepare] server-root");
+            engine = new UpdateEngine(Path.of(args[prepare ? 1 : 0]), Release.publicKey(), new Transport());
+            if (prepare) engine.prepareOnly(); else engine.beforeLaunch();
         } catch (Exception e) {
             if (engine != null) try { engine.log("SAFETY STOP: " + e); } catch (IOException ignored) {}
             System.err.println("[Server patch] Unsafe state; server launch stopped for review: " + e);

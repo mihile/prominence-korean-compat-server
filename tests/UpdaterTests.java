@@ -87,6 +87,41 @@ public final class UpdaterTests {
         for(int i=0;i<3;i++)engine(r,s).beforeLaunch();check(s.downloads==1,"blocked build cannot loop");
         Source next=new Source(BUILD+1);engine(r,next).beforeLaunch();check(next.downloads==1,"newer fixed build allowed");ack(r,BUILD+1);engine(r,next).beforeLaunch();
     }
+    static void preparationAndLegacyJournal()throws Exception {
+        for(boolean migration:new boolean[]{true,false}) {
+            Path r=root();Path old=setup(r,migration?0:BUILD-1);byte[] original=Files.readAllBytes(old);Source s=new Source(BUILD);
+            engine(r,s).prepareOnly();
+            Properties pending=read(state(r,"pending.properties"));
+            check("true".equals(pending.getProperty("ready"))&&!pending.containsKey("attempted"),"prepare is not a startup attempt");
+            for(int i=0;i<3;i++)engine(r,s).prepareOnly();
+            check(s.downloads==1,"repeated preparation does not reinstall");
+            check(!read(state(r,"pending.properties")).containsKey("attempted"),"preparation keeps waiting for first startup");
+            engine(r,s).beforeLaunch();
+            check("true".equals(read(state(r,"pending.properties")).getProperty("attempted")),"real preflight arms prepared update");
+            check(s.downloads==1,"first real preflight keeps prepared bytes");
+            engine(r,s).beforeLaunch();
+            check(Arrays.equals(Files.readAllBytes(old),original),"failed first actual start rolls back prepared update");
+        }
+        for(String phase:List.of("ready","attempt")) {
+            Path r=root();Path old=setup(r,0);byte[] original=Files.readAllBytes(old);Source s=new Source(BUILD);
+            try{new UpdateEngine(r,KEY.getPublic(),s,p->{if(p.equals(phase))throw new PowerLoss();}).beforeLaunch();throw new AssertionError();}catch(PowerLoss expected){}
+            engine(r,s).beforeLaunch();
+            if(phase.equals("ready")) {
+                check(Files.exists(r.resolve("mods/"+Release.FILE)),"interrupted before attempt resumes prepared update");
+                check("true".equals(read(state(r,"pending.properties")).getProperty("attempted")),"resumed update armed once");
+                engine(r,s).beforeLaunch();
+            }
+            baselineUnchanged(r,original);
+        }
+        for(boolean healthy:new boolean[]{true,false}) {
+            Path r=root();Path old=setup(r,0);byte[] original=Files.readAllBytes(old);Source s=new Source(BUILD);engine(r,s).beforeLaunch();
+            Properties p=read(state(r,"pending.properties"));p.remove("ready");p.remove("attempted");FilesEx.write(state(r,"pending.properties"),p);
+            if(healthy)ack(r,BUILD);
+            engine(r,s).beforeLaunch();
+            if(healthy)check(!Files.exists(old)&&!Files.exists(state(r,"pending.properties")),"build-1 healthy journal remains compatible");
+            else baselineUnchanged(r,original);
+        }
+    }
     static class PowerLoss extends Error {}
     static void interruptedTransactions()throws Exception {
         for(boolean migration:new boolean[]{true,false})for(String phase:List.of("backup","journal","replace","removeLegacy")) {
@@ -146,7 +181,7 @@ public final class UpdaterTests {
         for(String uri:List.of("https://github.com/x","https://release-assets.githubusercontent.com/x","https://objects.githubusercontent.com/x")) {Transport.trusted(URI.create(uri));checks++;}
     }
     public static void main(String[] args)throws Exception {
-        updateAndCommit();rollback(true);rollback(false);interruptedTransactions();rejectedAndOffline();safetyStops();manifestAndUrls();
+        updateAndCommit();rollback(true);rollback(false);preparationAndLegacyJournal();interruptedTransactions();rejectedAndOffline();safetyStops();manifestAndUrls();
         System.out.println("PASS: "+checks+" server updater checks; no Minecraft/server/world launched.");
     }
 }
