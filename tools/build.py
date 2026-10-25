@@ -19,7 +19,9 @@ def packed(entries):
 def main():
     a=argparse.ArgumentParser()
     for name in ['base','classpath','java-home','output']: a.add_argument('--'+name,type=Path,required=True)
-    a.add_argument('--build',type=int,required=True); args=a.parse_args()
+    a.add_argument('--build',type=int,required=True)
+    a.add_argument('--preserve-updater',action='store_true',help='Reuse updater bytes only when embedded sources and public key match exactly')
+    args=a.parse_args()
     work=args.output/'work'; classes=work/'classes'; classes.mkdir(parents=True,exist_ok=True)
     sources=sorted((ROOT/'src/main/java').rglob('*.java'))
     cp=os.pathsep.join([str(args.base.resolve()),*json.loads(args.classpath.read_text('utf8'))])
@@ -36,7 +38,17 @@ def main():
     prior=meta.get('custom',{}).get('prominenceServerUpdate',{}).get('build',0)
     assert args.build>prior,'Build must increase'
     new={n:b for n,b in old.items() if not n.startswith((PREFIX,'META-INF/prominence-korean-compat-source/server-update/'))}
-    added={p.relative_to(classes).as_posix():p.read_bytes() for p in classes.rglob('*.class')}; new.update(added)
+    added={p.relative_to(classes).as_posix():p.read_bytes() for p in classes.rglob('*.class')}
+    if args.preserve_updater:
+        previous={n:b for n,b in old.items() if n.startswith(PREFIX) and n.endswith('.class')}
+        assert set(previous)==set(added),'Updater class set changed'
+        for p in sources:
+            source='META-INF/prominence-korean-compat-source/server-update/'+p.relative_to(ROOT/'src/main/java').as_posix()
+            assert old.get(source)==p.read_bytes(),'Updater source changed; cannot reuse old bytecode'
+        assert old['assets/prominence_korean_compat/server-update-public-key.der']==(ROOT/'public-key.der').read_bytes()
+        added=previous
+        for n,b in added.items():(classes/n).write_bytes(b)
+    new.update(added)
     new['assets/prominence_korean_compat/server-update-public-key.der']=(ROOT/'public-key.der').read_bytes()
     new['assets/prominence_korean_compat/server-update-build.properties']=(f'build={args.build}\nchannel=server\npack=4.1.3\nminecraft=1.20.1\nfilename={FILE}\n').encode('ascii')
     meta['name']='Prominence Korean Compat Server'; meta['environment']='server'
@@ -57,6 +69,6 @@ def main():
     raw=packed(new); args.output.mkdir(parents=True,exist_ok=True); (args.output/FILE).write_bytes(raw)
     script=(ROOT/'scripts/ServerUpdate.ps1').read_text('utf8').replace('__BOOTSTRAP_SHA256__',sha(raw))
     (args.output/'ServerUpdate.ps1').write_text(script,encoding='utf-8-sig')
-    report={'build':args.build,'sha256':sha(raw),'size':len(raw),'baseSha256':sha(args.base.read_bytes()),'preservedClasses':len(preserved),'updaterClasses':len(added),'gameStarted':False}
+    report={'build':args.build,'sha256':sha(raw),'size':len(raw),'baseSha256':sha(args.base.read_bytes()),'preservedClasses':len(preserved),'updaterClasses':len(added),'updaterReusedByteForByte':args.preserve_updater,'gameStarted':False}
     (args.output/'build-report.json').write_bytes(enc(report)); print(json.dumps(report,indent=2))
 if __name__=='__main__': main()

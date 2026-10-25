@@ -1,5 +1,7 @@
 # 서버 패치 빌드와 배포
 
+2026-10-26 유지보수 지침: 검증된 변경이 서버 통합 JAR 하나의 교체로 끝나면 최신 누적본에 통합해 이 저장소의 서명된 정식 릴리스/피드로 공개합니다. 과거 서버 준비본만 유지 조건은 폐기됐으며 게시 승인을 다시 요청하지 않습니다. 기존 updater가 다음 정상 시작 직전에 적용합니다. 실행 중 설치본 직접 교체·강제 종료·재시작이나 설정/월드/시작 훅/다른 모드 변경으로 확대하지 않습니다. JAR 단독 변경마다 별도 수동 ZIP을 만들지 않으며 비JAR 배포가 필요하면 그 범위를 명시합니다.
+
 클라이언트 저장소와 별도 작업입니다. 파일명 `prominence-korean-compat-server-1.0.0.jar`, mod ID `prominence_korean_compat`, mod version `1.0.0`을 유지하고 **매 배포마다 내부 build를 증가**시킵니다. 공개한 빌드의 JAR/서명을 바꾸어 재사용하지 않습니다.
 
 최신 누적 서버 JAR을 base로 사용합니다. 클라이언트 JAR, 예전 운영 JAR 또는 예전 ZIP으로 바꾸면 안 됩니다. 첫 기준은 Testosterone 수정이 포함된 `base/server-compat-before-updater.jar`입니다. 이후에는 직전 서버 릴리스 JAR에 새 서버 수정부터 통합한 결과를 base로 사용합니다. 새 업데이트 모듈 이외의 기존 클래스·가드·믹신·진입점을 보존합니다. 클라이언트 전용 클래스/의존성을 통합하지 않습니다.
@@ -15,6 +17,8 @@ python tools/build.py --base base/server-compat-before-updater.jar --classpath c
 JDK17 대상으로 컴파일합니다. 모듈 라이선스 전문·원저자·내장 소스·self guard 지문을 보존하고 검사합니다. 누적 모듈의 버전 가드를 무작정 넓히지 않습니다.
 
 Just Hammers 서버 인챈트 모듈은 [별도 빌드·검증 절차](HAMMER_ENCHANTMENTS.md)를 따릅니다. `src/compat/java`의 모듈을 최신 공개 누적 JAR에 먼저 통합한 결과를 updater 빌드의 base로 사용합니다. 이후 릴리스도 이 추가 모듈을 보존합니다.
+
+정교한 배낭의 패널 내 재단조는 [별도 절차](BACKPACK_INLINE_REFORGE.md)를 따릅니다. `src/compat/backpack-inline`은 서버 공통 코드만 담으며, 최신 서버 누적 JAR에 추가한 결과를 updater 빌드의 base로 사용합니다. 클라이언트 전용 화면 코드를 포함하지 않습니다.
 
 ```text
 python tools/verify.py --build-dir build --classpath classpath.json --java-home JDK_HOME
