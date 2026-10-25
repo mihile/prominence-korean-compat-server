@@ -7,3 +7,4 @@ classpath.json
 *.pem
 *.key
 __pycache__/
+.mixin.out/

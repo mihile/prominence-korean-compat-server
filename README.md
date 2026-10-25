@@ -25,7 +25,7 @@ Prominence II **4.1.3 · Minecraft 1.20.1 · Fabric** 전용 서버용 누적 �
 <details>
 <summary>장비와 제작 호환</summary>
 
-화살통과 화살 스킬의 탄약 소모, 대장장이 장비 정보 보존, 정교한 배낭 작업대·모루·재단조 연결, 전기톱과 TreeChop의 서버 판정 호환을 보완합니다. 대상 모드 버전과 기존 호환 조건을 유지합니다.
+화살통과 화살 스킬의 탄약 소모, 대장장이 장비 정보 보존, 정교한 배낭 작업대·모루·재단조 연결, 전기톱과 TreeChop의 서버 판정 호환을 보완합니다. Just Hammers의 주변 채굴도 정상 채굴 이벤트를 거치도록 하여 베인 마이닝과 대지의 축복이 발동할 수 있도록 합니다. 대상 모드 버전과 기존 호환 조건을 유지합니다.
 
 </details>
 
@@ -49,6 +49,6 @@ Prominence II **4.1.3 · Minecraft 1.20.1 · Fabric** 전용 서버용 누적 �
 
 ## 개발과 배포
 
-이 저장소의 `src`는 서버 자동 업데이트 모듈입니다. 누적 서버 호환 JAR에 기존 기능을 보존한 채 통합하며, 기존 소스·라이선스·출처도 유지합니다. Testosterone 액체 검사 모듈은 GPL-3.0-only이며 관련 전문은 [라이선스 파일](LICENSES/GPL-3.0-only.txt)에 있습니다.
+`src/main/java`는 서버 자동 업데이트 모듈, `src/compat/java`는 추가 서버 호환 모듈입니다. 누적 서버 호환 JAR에 기존 기능을 보존한 채 통합하며, 기존 소스·라이선스·출처도 유지합니다. Testosterone 액체 검사와 Just Hammers 호환 모듈은 GPL-3.0-only이며 관련 전문은 [라이선스 파일](LICENSES/GPL-3.0-only.txt)에 있습니다.
 
 [관리자 빌드·배포 절차](docs/MAINTAINER.md) · [검증 범위](docs/VALIDATION.md)

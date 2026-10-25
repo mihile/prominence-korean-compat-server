@@ -14,6 +14,8 @@ python tools/build.py --base base/server-compat-before-updater.jar --classpath c
 
 JDK17 대상으로 컴파일합니다. 모듈 라이선스 전문·원저자·내장 소스·self guard 지문을 보존하고 검사합니다. 누적 모듈의 버전 가드를 무작정 넓히지 않습니다.
 
+Just Hammers 서버 인챈트 모듈은 [별도 빌드·검증 절차](HAMMER_ENCHANTMENTS.md)를 따릅니다. `src/compat/java`의 모듈을 최신 공개 누적 JAR에 먼저 통합한 결과를 updater 빌드의 base로 사용합니다. 이후 릴리스도 이 추가 모듈을 보존합니다.
+
 ```text
 python tools/verify.py --build-dir build --classpath classpath.json --java-home JDK_HOME
 ```
