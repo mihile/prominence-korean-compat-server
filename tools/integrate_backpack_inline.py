@@ -14,6 +14,7 @@ def main():
     parser = argparse.ArgumentParser()
     for name in ['base', 'classpath', 'java-home', 'output']:
         parser.add_argument('--'+name, type=Path, required=True)
+    parser.add_argument('--replace-tab-selection',action='store_true',help='Reviewed replacement: only InlineReforge/InlineState classes and embedded sources may change')
     args = parser.parse_args()
     work = args.output.parent/'backpack-inline-work'
     classes = work/'classes'; classes.mkdir(parents=True, exist_ok=True)
@@ -32,7 +33,8 @@ def main():
     meta = json.loads(old['fabric.mod.json'])
     assert meta['environment'] == 'server' and not meta['entrypoints'].get('client')
     assert 'prominence-testosterone-memory.mixins.json' in old and 'prominence-hammer-enchantments.mixins.json' in old
-    assert not any(n.startswith(PREFIX) for n in old), 'Explicitly review module replacement before rebasing'
+    existing={n for n in old if n.startswith(PREFIX) and n.endswith('.class')}
+    assert bool(existing)==args.replace_tab_selection, 'Use explicit reviewed --replace-tab-selection only for an existing module'
     added = {p.relative_to(classes).as_posix():p.read_bytes() for p in classes.rglob('*.class')}
     assert len(added) == 14
     for n,b in added.items():
@@ -43,21 +45,34 @@ def main():
     for p in sources:
         added['META-INF/prominence-korean-compat-source/backpack-inline/'+p.relative_to(SOURCE).as_posix()] = p.read_bytes()
     added['META-INF/notices/backpack-inline.txt'] = b'Original MIT compatibility module. Delegates reforge rules and consumption to installed Tierify. Requires corresponding client support; no client renderer included. Original mods and their licenses are unchanged.\n'
-    assert not set(added).intersection(old)
+    if args.replace_tab_selection:
+        current={n for n in added if n.endswith('.class')}
+        assert existing==current, 'Module class set must stay exact'
+        changed={n for n in current if added[n]!=old[n]}
+        assert changed=={PREFIX+'InlineReforge.class',PREFIX+'InlineState.class'}, changed
+        source_prefix='META-INF/prominence-korean-compat-source/backpack-inline/'
+        allowed=changed|{source_prefix+PREFIX+'InlineReforge.java',source_prefix+PREFIX+'InlineState.java'}
+        assert all(old.get(n)==b for n,b in added.items() if n not in allowed), 'Unreviewed common resource/source change'
+    else:
+        assert not set(added).intersection(old)
     config = 'prominence-inline-reforge.mixins.json'
-    meta['entrypoints'].setdefault('main', []).append('local.prominence.backpackinline.InlineReforge')
-    meta['mixins'].append({'config':config,'environment':'server'})
+    entry='local.prominence.backpackinline.InlineReforge'
+    if entry not in meta['entrypoints'].setdefault('main', []):meta['entrypoints']['main'].append(entry)
+    mixin={'config':config,'environment':'server'}
+    if mixin not in meta['mixins']:meta['mixins'].append(mixin)
     meta.setdefault('custom', {})['prominence:backpack_inline_reforge'] = {'version':'1.0.0','requiresClientSupport':True,'protocol':'inline_reforge_v1'}
     new = {**old, **added, 'fabric.mod.json':encode(meta)}
-    assert all(new[n] == b for n,b in old.items() if n != 'fabric.mod.json')
+    assert all(new[n] == b for n,b in old.items() if n != 'fabric.mod.json' and not (args.replace_tab_selection and n in allowed))
     stream = io.BytesIO()
     with zipfile.ZipFile(stream,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
         for n,b in sorted(new.items()):
             info=zipfile.ZipInfo(n,(2026,1,1,0,0,0));info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o100644<<16;z.writestr(info,b)
     args.output.parent.mkdir(parents=True,exist_ok=True);args.output.write_bytes(stream.getvalue())
     report = {'baseSha256':hashlib.sha256(args.base.read_bytes()).hexdigest(),'sha256':hashlib.sha256(args.output.read_bytes()).hexdigest(),
-              'addedClasses':14,'preservedClasses':sum(n.endswith('.class') for n in old),
-              'allPreviousNonMetadataEntriesByteIdentical':True,'clientClassesIncluded':False,'gameStarted':False,'serverStarted':False}
+              'moduleClasses':14,'addedClasses':0 if args.replace_tab_selection else 14,
+              'changedClasses':sorted(changed) if args.replace_tab_selection else [],
+              'preservedClasses':sum(n.endswith('.class') and new[n]==b for n,b in old.items()),
+              'allOtherPreviousNonMetadataEntriesByteIdentical':True,'clientClassesIncluded':False,'gameStarted':False,'serverStarted':False}
     (work/'integration.json').write_bytes(encode(report));print(json.dumps(report,indent=2))
 
 if __name__ == '__main__':main()
