@@ -28,6 +28,8 @@ python tools/verify.py --build-dir build --classpath classpath.json --java-home 
 
 ## 서명 및 공개
 
+화살 틱/Neruina UUID/서버 반복 로그 모듈은 [별도 절차](ARROW_TICK_LOGS.md)를 따릅니다. `src/compat/arrow-tick`을 최신 누적 JAR에 통합한 뒤 updater 바이트를 보존하여 빌드합니다. 해당 모듈을 이후 누적 빌드에서 누락하지 않습니다.
+
 서버용 Ed25519 개인키는 저장소 밖의 안전한 위치에서 유지합니다. 최초 작업 PC의 경로는 사용자 `.codex/keys/prominence-korean-compat-server/update-ed25519.pk8`입니다. 클라이언트 키와 별개입니다. 재생성/덮어쓰기하지 않습니다. `public-key.der`만 배포합니다. 개인키·토큰·개인 설정·월드·로그·classpath를 업로드하지 않습니다.
 
 ```text

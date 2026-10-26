@@ -32,7 +32,7 @@ Prominence II **4.1.3 · Minecraft 1.20.1 · Fabric** 전용 서버용 누적 �
 <details>
 <summary>플레이와 서버 실행 보완</summary>
 
-스킬 프리셋, 삼지창 반환, 장신구 이력, BetterEnd 높이 캐시와 구조물 메모리 보완을 포함합니다. Testosterone의 불필요한 액체 조회가 청크를 계속 유지하는 문제도 보완합니다. Voxy/VoxyServer는 별도 모드이며 이 JAR의 자동 업데이트 대상에 포함되지 않습니다.
+스킬 프리셋, 삼지창 반환, 장신구 이력, BetterEnd 높이 캐시와 구조물 메모리 보완을 포함합니다. Testosterone의 불필요한 액체 조회가 청크를 계속 유지하는 문제도 보완합니다. 화살의 광역 주문 위력 누락과 Neruina의 UUID 저장 형식을 보완하고, 확인된 정상 반복 로그는 최초 및 5분 간격으로 줄입니다. 실제 오류와 새로운 경고는 표시합니다. Voxy/VoxyServer는 별도 모드이며 이 JAR의 자동 업데이트 대상에 포함되지 않습니다.
 
 </details>
 
