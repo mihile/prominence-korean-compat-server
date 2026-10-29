@@ -43,3 +43,9 @@ Build 2026102912 (client nightly) and 2026102902 (server) add this module to the
 Maintainer tools: `verify_rewards_native.py`, `verify_rewards_behavior.py`, and `generate_reward_references.py --quests PATH_TO_quests/chapters --output PATH_TO_reward_quest_items.json`. Private classpath files and raw native audits remain outside Git. Generated native verifier output stays under the build directory.
 
 Server source: `src/compat/reward-scaling/`. Integrate with `tools/integrate_reward_scaling.py` before the normal cumulative updater build. Client-only display stays in the client repository.
+
+## Login initialization correction (client2026102914 / server2026102903)
+
+Fabric1.20.1 invokes pending channel REGISTER callbacks inside `new ServerPlayNetworkAddon(...)`, before the handler addon field is assigned. `MinecraftServer.execute` runs inline when already on the server thread, so it is not a deferral here. The former callback queried `canSend` too early and its catch retried the same query, escaping into PlayerManager as “Invalid player data”. This is not player-file corruption.
+
+REGISTER, JOIN and EMI data-sync callbacks now only request delivery in a synchronized weak-handler map. END_SERVER_TICK drains this server's requests after construction; disconnected or replaced handler identities are ignored. Duplicate notifications coalesce. Wire failures are nonfatal, do not retry inside catch, and never disable global gameplay scaling. The client repository tool `tools/verify_reward_login.py` executes the production initializer and wire against constructor-phase Fabric API doubles, reproduces the old exception, and checks inline executor timing, late registration, disconnect/replacement, multi-server separation, missing channels and all failure paths. Native target transformation and the complete Mixin package-boundary regression also remain required. No player data/world files are read or changed by this correction.
