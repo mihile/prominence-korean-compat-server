@@ -57,15 +57,18 @@ def main():
     meta.setdefault('custom',{})['prominenceServerUpdate']={'build':args.build,'channel':'server','pack':'4.1.3','healthSeconds':60}
     url='https://github.com/mihile/prominence-korean-compat-server'
     meta.setdefault('contact',{}).update(homepage=url,sources=url,issues=url+'/issues')
+    if 'local.prominence.cinder.CinderRewards' not in meta['entrypoints'].setdefault('main',[]): meta['entrypoints']['main'].append('local.prominence.cinder.CinderRewards')
+    if 'prominence-cinder.mixins.json' not in meta.setdefault('mixins',[]): meta['mixins'].append('prominence-cinder.mixins.json')
+    new['prominence-cinder.mixins.json']=(ROOT/'src/main/resources/prominence-cinder.mixins.json').read_bytes()
     new['fabric.mod.json']=enc(meta)
     for p in sources: new['META-INF/prominence-korean-compat-source/server-update/'+p.relative_to(ROOT/'src/main/java').as_posix()]=p.read_bytes()
     new['META-INF/notices/server-update.txt']=b'Original dedicated-server signed updater, MIT. Only its own server compatibility JAR is updated, before Minecraft starts. Existing modules retain their original licenses, including the GPL-3.0-only Testosterone fluid-check module. No private keys are distributed.\n'
     new['LICENSES/GPL-3.0-only.txt']=(ROOT/'LICENSES/GPL-3.0-only.txt').read_bytes()
     meta['license']=['MIT','GPL-3.0-only']
     new['fabric.mod.json']=enc(meta)
-    preserved=[n for n in old if n.endswith('.class') and not n.startswith(PREFIX)]
+    preserved=[n for n in old if n.endswith('.class') and not n.startswith((PREFIX,'local/prominence/cinder/'))]
     assert all(new[n]==old[n] for n in preserved)
-    assert all(new[n]==old[n] for n in old if n!='fabric.mod.json' and not n.startswith(PREFIX) and 'server-update' not in n)
+    assert all(new[n]==old[n] for n in old if n not in ('fabric.mod.json','prominence-cinder.mixins.json') and not n.startswith((PREFIX,'local/prominence/cinder/')) and 'server-update' not in n)
     raw=packed(new); args.output.mkdir(parents=True,exist_ok=True); (args.output/FILE).write_bytes(raw)
     script=(ROOT/'scripts/ServerUpdate.ps1').read_text('utf8').replace('__BOOTSTRAP_SHA256__',sha(raw))
     (args.output/'ServerUpdate.ps1').write_text(script,encoding='utf-8-sig')
