@@ -1,5 +1,6 @@
 package local.prominence.cinder.hourglass;
 
+import elocindev.prominentbase.item.HourglassItem;
 import net.minecraft.*;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
@@ -8,27 +9,69 @@ import org.slf4j.LoggerFactory;
 public final class HourglassSafeDelivery {
     private static final Logger LOGGER = LoggerFactory.getLogger("ProminenceHourglassGuard");
 
+    public enum DeliveryType {
+        TIMEOUT,
+        VICTORY,
+        REFUND,
+        CREATION_FAILED
+    }
+
     private HourglassSafeDelivery() {}
 
-    public static boolean deliver(MinecraftServer server, class_3222 player, class_1799 stack, class_2338 fallbackPos, String reason) {
+    public static boolean deliver(MinecraftServer server, class_3222 player, class_1799 stack, class_2338 fallbackPos, DeliveryType type) {
         if (stack == null || stack.method_7960()) {
             return true;
         }
+
+        int level = HourglassItem.getLevel(stack);
+        String levelText = level > 0 ? " (레벨 " + level + ")" : "";
 
         if (player != null && !player.method_31481()) {
             // 1. Try regular inventory
             boolean inserted = player.method_31548().method_7394(stack);
             if (stack.method_7960()) {
-                player.method_43496(class_2561.method_43470("§a[모래시계] §f" + reason + " (인벤토리 지급 완료)"));
-                LOGGER.info("Hourglass safely delivered to inventory of {} ({})", player.method_5477().getString(), reason);
+                String msg;
+                switch (type) {
+                    case TIMEOUT:
+                        msg = "§6[불경한 모래시계] §f포탈 제한 시간이 만료되어 모래시계" + levelText + "가 인벤토리로 반환되었습니다.";
+                        break;
+                    case VICTORY:
+                        msg = "§6[불경한 모래시계] §a도전 승리! §f승급된 모래시계" + levelText + "가 인벤토리로 지급되었습니다.";
+                        break;
+                    case CREATION_FAILED:
+                        msg = "§6[불경한 모래시계] §f도전을 생성할 수 없어 소모된 모래시계가 인벤토리로 즉시 반환되었습니다.";
+                        break;
+                    case REFUND:
+                    default:
+                        msg = "§6[불경한 모래시계] §f도전이 종료되어 모래시계" + levelText + "가 인벤토리로 반환되었습니다.";
+                        break;
+                }
+                player.method_43496(class_2561.method_43470(msg));
+                LOGGER.info("Hourglass safely delivered to inventory of {} ({})", player.method_5477().getString(), type);
                 return true;
             }
 
             // 2. Try Ender Chest if inventory was full
             stack = player.method_7274().method_5491(stack);
             if (stack == null || stack.method_7960()) {
-                player.method_43496(class_2561.method_43470("§e[모래시계] §f인벤토리가 가득 차 §6엔더 상자§f로 안전하게 지급되었습니다. (" + reason + ")"));
-                LOGGER.info("Hourglass safely delivered to Ender Chest of {} ({})", player.method_5477().getString(), reason);
+                String msg;
+                switch (type) {
+                    case TIMEOUT:
+                        msg = "§6[불경한 모래시계] §f포탈 제한 시간이 만료되었으나 인벤토리가 가득 차 §e엔더 상자§f로 모래시계" + levelText + "가 반환되었습니다.";
+                        break;
+                    case VICTORY:
+                        msg = "§6[불경한 모래시계] §a도전 승리! §f인벤토리가 가득 차 승급된 모래시계" + levelText + "가 §e엔더 상자§f로 지급되었습니다.";
+                        break;
+                    case CREATION_FAILED:
+                        msg = "§6[불경한 모래시계] §f도전을 생성할 수 없어 소모된 모래시계가 §e엔더 상자§f로 반환되었습니다.";
+                        break;
+                    case REFUND:
+                    default:
+                        msg = "§6[불경한 모래시계] §f도전이 종료되었으나 인벤토리가 가득 차 §e엔더 상자§f로 모래시계" + levelText + "가 반환되었습니다.";
+                        break;
+                }
+                player.method_43496(class_2561.method_43470(msg));
+                LOGGER.info("Hourglass safely delivered to Ender Chest of {} ({})", player.method_5477().getString(), type);
                 return true;
             }
         }
@@ -54,9 +97,13 @@ public final class HourglassSafeDelivery {
                 overworld.method_8649(entity); // spawnEntity()
 
                 if (player != null) {
-                    player.method_43496(class_2561.method_43470("§c[모래시계] §f인벤토리/엔더상자가 가득 차 오버월드(" + targetPos.method_10263() + ", " + targetPos.method_10264() + ", " + targetPos.method_10260() + ") 바닥에 생성되었습니다. (" + reason + ")"));
+                    player.method_43496(class_2561.method_43470(
+                        "§c[불경한 모래시계] §f인벤토리와 엔더 상자가 가득 차 오버월드(" +
+                        targetPos.method_10263() + ", " + targetPos.method_10264() + ", " + targetPos.method_10260() +
+                        ") 바닥에 모래시계" + levelText + "가 안전하게 보관되었습니다."
+                    ));
                 }
-                LOGGER.warn("Hourglass dropped in Overworld at {} for {} ({})", targetPos, player != null ? player.method_5477().getString() : "offline", reason);
+                LOGGER.warn("Hourglass dropped in Overworld at {} for {} ({})", targetPos, player != null ? player.method_5477().getString() : "offline", type);
                 return true;
             }
         }

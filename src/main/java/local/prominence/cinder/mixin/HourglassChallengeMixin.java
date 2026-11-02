@@ -38,7 +38,7 @@ public abstract class HourglassChallengeMixin {
         }
 
         net.minecraft.class_1799 reward = ((MythicChallengeAccessor)this).invokeBuildWinReward(world, recipient.method_5667());
-        boolean delivered = HourglassSafeDelivery.deliver(server, recipient, reward, this.spawnPos, "도전 승리 보상 (승급 모래시계)");
+        boolean delivered = HourglassSafeDelivery.deliver(server, recipient, reward, this.spawnPos, HourglassSafeDelivery.DeliveryType.VICTORY);
         cir.setReturnValue(delivered);
     }
 
@@ -67,7 +67,7 @@ public abstract class HourglassChallengeMixin {
         }
 
         net.minecraft.class_1799 refund = ((MythicChallengeAccessor)this).invokeBuildRefund(level);
-        HourglassSafeDelivery.deliver(server, recipient, refund, this.spawnPos, "모래시계 반환 (레벨 " + level + ")");
+        HourglassSafeDelivery.deliver(server, recipient, refund, this.spawnPos, HourglassSafeDelivery.DeliveryType.REFUND);
         ((MythicChallengeAccessor)this).setHourglassRefunded(true);
         ((MythicChallengeAccessor)this).setPendingRefundLevel(-1);
         ci.cancel();
@@ -84,7 +84,7 @@ public abstract class HourglassChallengeMixin {
             net.minecraft.class_3222 recipient = this.data.initializingPlayer != null ? server.method_3760().method_14602(this.data.initializingPlayer) : null;
             if (recipient != null) {
                 net.minecraft.class_1799 refund = acc.invokeBuildRefund(acc.getPendingRefundLevel());
-                HourglassSafeDelivery.deliver(server, recipient, refund, this.spawnPos, "도전 종료 모래시계 반환");
+                HourglassSafeDelivery.deliver(server, recipient, refund, this.spawnPos, HourglassSafeDelivery.DeliveryType.REFUND);
                 acc.setHourglassRefunded(true);
                 acc.setPendingRefundLevel(-1);
             }
@@ -93,7 +93,7 @@ public abstract class HourglassChallengeMixin {
             net.minecraft.class_3222 recipient = this.data.initializingPlayer != null ? server.method_3760().method_14602(this.data.initializingPlayer) : null;
             if (recipient != null) {
                 net.minecraft.class_1799 reward = acc.invokeBuildWinReward(arenaWorld, recipient.method_5667());
-                HourglassSafeDelivery.deliver(server, recipient, reward, this.spawnPos, "도전 승리 보상 (승급 모래시계)");
+                HourglassSafeDelivery.deliver(server, recipient, reward, this.spawnPos, HourglassSafeDelivery.DeliveryType.VICTORY);
                 acc.setRewardGiven(true);
             }
         }

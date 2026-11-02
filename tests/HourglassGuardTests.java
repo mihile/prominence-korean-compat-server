@@ -11,7 +11,7 @@ public final class HourglassGuardTests {
     public static void main(String[] args) throws Exception {
         ClassLoader cl = HourglassGuardTests.class.getClassLoader();
 
-        // 1. Verify HourglassSafeDelivery exists and has deliver method
+        // 1. Verify HourglassSafeDelivery exists and has deliver method with DeliveryType
         Method deliverMethod = null;
         for (Method m : HourglassSafeDelivery.class.getDeclaredMethods()) {
             if (m.getName().equals("deliver")) {
@@ -21,8 +21,12 @@ public final class HourglassGuardTests {
         }
         check(deliverMethod != null, "HourglassSafeDelivery.deliver method missing");
         check(deliverMethod.getParameterCount() == 5, "HourglassSafeDelivery.deliver parameter count mismatch");
+        check(deliverMethod.getParameterTypes()[4] == HourglassSafeDelivery.DeliveryType.class, "Last param must be DeliveryType");
 
-        // 2. Verify mixin classes exist in classpath (without initializing static blocks)
+        // 2. Verify DeliveryType values
+        check(HourglassSafeDelivery.DeliveryType.values().length == 4, "DeliveryType values count mismatch");
+
+        // 3. Verify mixin classes exist in classpath (without initializing static blocks)
         Class<?> acc = Class.forName("local.prominence.cinder.mixin.MythicChallengeAccessor", false, cl);
         check(acc != null && acc.isInterface(), "MythicChallengeAccessor interface missing");
 
@@ -35,7 +39,7 @@ public final class HourglassGuardTests {
         Class<?> im = Class.forName("local.prominence.cinder.mixin.HourglassItemMixin", false, cl);
         check(im != null, "HourglassItemMixin missing");
 
-        // 3. Verify prominentbase target classes exist in classpath (without triggering Minecraft static bootstrap)
+        // 4. Verify prominentbase target classes exist in classpath
         Class<?> mc = Class.forName("elocindev.prominentbase.mythicchallenge.MythicChallenge", false, cl);
         check(mc != null, "MythicChallenge class missing");
 

@@ -27,7 +27,7 @@ public abstract class HourglassPortalMixin {
         if (cUuid == null) return;
 
         elocindev.prominentbase.mythicchallenge.MythicChallengesComponent comp =
-            elocindev.prominentbase.mythicchallenge.MythicChallengesComponent.KEY.get(server.method_30002());
+            elocindev.prominentbase.mythicchallenge.MythicChallengesComponent.KEY.getNullable(player.method_37908().method_8428());
         if (comp == null) return;
 
         elocindev.prominentbase.mythicchallenge.MythicChallenge challenge = comp.getChallenge(cUuid);
@@ -36,12 +36,12 @@ public abstract class HourglassPortalMixin {
         MythicChallengeAccessor acc = (MythicChallengeAccessor)challenge;
         if (challenge.data.endState == elocindev.prominentbase.mythicchallenge.MythicChallengeData.EndState.WIN && !acc.getRewardGiven()) {
             net.minecraft.class_1799 reward = acc.invokeBuildWinReward((net.minecraft.class_3218)player.method_37908(), player.method_5667());
-            HourglassSafeDelivery.deliver(server, player, reward, this.overworldSpawnPos, "도전 승리 보상 (승급 모래시계)");
+            HourglassSafeDelivery.deliver(server, player, reward, this.overworldSpawnPos, HourglassSafeDelivery.DeliveryType.VICTORY);
             acc.setRewardGiven(true);
         } else if (!acc.getHourglassRefunded() && (challenge.data.endState == elocindev.prominentbase.mythicchallenge.MythicChallengeData.EndState.LOSE || challenge.data.endState == elocindev.prominentbase.mythicchallenge.MythicChallengeData.EndState.TIMEOUT)) {
             int level = acc.getPendingRefundLevel() >= 0 ? acc.getPendingRefundLevel() : challenge.data.challengeLevel;
             net.minecraft.class_1799 refund = acc.invokeBuildRefund(level);
-            HourglassSafeDelivery.deliver(server, player, refund, this.overworldSpawnPos, "모래시계 반환 (레벨 " + level + ")");
+            HourglassSafeDelivery.deliver(server, player, refund, this.overworldSpawnPos, HourglassSafeDelivery.DeliveryType.REFUND);
             acc.setHourglassRefunded(true);
             acc.setPendingRefundLevel(-1);
         }
@@ -73,7 +73,7 @@ public abstract class HourglassPortalMixin {
         if (server == null) return;
 
         elocindev.prominentbase.mythicchallenge.MythicChallengesComponent comp =
-            elocindev.prominentbase.mythicchallenge.MythicChallengesComponent.KEY.get(server.method_30002());
+            elocindev.prominentbase.mythicchallenge.MythicChallengesComponent.KEY.getNullable(world.method_8428());
         if (comp == null) return;
 
         elocindev.prominentbase.mythicchallenge.MythicChallenge challenge = comp.getChallenge(this.challengeUuid);
@@ -81,7 +81,7 @@ public abstract class HourglassPortalMixin {
             net.minecraft.class_3222 player = this.initializingPlayer != null ? server.method_3760().method_14602(this.initializingPlayer) : null;
             net.minecraft.class_1799 refund = ((MythicChallengeAccessor)challenge).invokeBuildRefund(challenge.data.challengeLevel);
 
-            HourglassSafeDelivery.deliver(server, player, refund, self.method_24515(), "포탈 유지 시간 만료로 모래시계가 반환되었습니다.");
+            HourglassSafeDelivery.deliver(server, player, refund, self.method_24515(), HourglassSafeDelivery.DeliveryType.TIMEOUT);
             ((MythicChallengeAccessor)challenge).setHourglassRefunded(true);
 
             comp.closeChallenge(this.challengeUuid);

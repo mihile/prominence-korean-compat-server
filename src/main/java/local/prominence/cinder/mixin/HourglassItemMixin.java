@@ -20,7 +20,7 @@ public abstract class HourglassItemMixin {
     ) {
         if (challenge == null && player instanceof net.minecraft.class_3222 serverPlayer) {
             net.minecraft.class_1799 refund = new net.minecraft.class_1799(elocindev.prominentbase.registry.ProminentBaseItems.HOURGLASS);
-            HourglassSafeDelivery.deliver(serverPlayer.method_5682(), serverPlayer, refund, pos, "도전 생성 실패로 모래시계가 반환되었습니다.");
+            HourglassSafeDelivery.deliver(serverPlayer.method_5682(), serverPlayer, refund, pos, HourglassSafeDelivery.DeliveryType.CREATION_FAILED);
         }
     }
 }
