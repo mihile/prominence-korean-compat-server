@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "local.prominence.voxyservercalm.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "plugin": "local.prominence.voxyservercalm.VoxyServerCalmGuard",
+  "mixins": [
+    "ServerLodEngineIdleRefMixin",
+    "ChunkVoxelizerLoadPaceMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

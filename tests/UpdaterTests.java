@@ -180,8 +180,22 @@ public final class UpdaterTests {
             refused(()->Transport.trusted(URI.create(uri)),"untrusted URL");
         for(String uri:List.of("https://github.com/x","https://release-assets.githubusercontent.com/x","https://objects.githubusercontent.com/x")) {Transport.trusted(URI.create(uri));checks++;}
     }
+    static void serverJoinStabilityChecks()throws Exception {
+        local.prominence.voxyservercalm.VoxyServerCalmState.reset();
+        for(int i=0;i<local.prominence.voxyservercalm.VoxyServerCalmState.MAX_SYNC_LOAD_INGESTS_PER_TICK;i++) {
+            check(local.prominence.voxyservercalm.VoxyServerCalmState.tryAcquireLoadIngest(100L),"within tick budget "+i);
+        }
+        check(!local.prominence.voxyservercalm.VoxyServerCalmState.tryAcquireLoadIngest(100L),"burst beyond tick budget deferred");
+        check(local.prominence.voxyservercalm.VoxyServerCalmState.deferredCount()==1L,"deferred count tracked");
+        check(local.prominence.voxyservercalm.VoxyServerCalmState.tryAcquireLoadIngest(101L),"next tick resets budget");
+        var sent=new HashMap<Object,Long>();Object conn=new Object();
+        check(local.prominence.rewards.RewardCommonInit.shouldQueue(conn,sent,2L),"first sync queues");
+        sent.put(conn,2L);
+        check(!local.prominence.rewards.RewardCommonInit.shouldQueue(conn,sent,2L),"duplicate REGISTER+JOIN suppressed");
+        check(local.prominence.rewards.RewardCommonInit.shouldQueue(conn,sent,3L),"new reload epoch queues");
+    }
     public static void main(String[] args)throws Exception {
-        updateAndCommit();rollback(true);rollback(false);preparationAndLegacyJournal();interruptedTransactions();rejectedAndOffline();safetyStops();manifestAndUrls();
+        updateAndCommit();rollback(true);rollback(false);preparationAndLegacyJournal();interruptedTransactions();rejectedAndOffline();safetyStops();manifestAndUrls();serverJoinStabilityChecks();
         System.out.println("PASS: "+checks+" server updater checks; no Minecraft/server/world launched.");
     }
 }

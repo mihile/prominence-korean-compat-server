@@ -1,0 +1,9 @@
+{
+  "voxyserver": {
+    "versionPrefix": "1.2.4+1.20.1",
+    "classes": {
+      "com/dripps/voxyserver/server/ServerLodEngine.class": "481835c74d9411a2d00300bbd18881c62fbd2d66502d17c159eae3eec45ddec6",
+      "com/dripps/voxyserver/server/ChunkVoxelizer.class": "a1279773f88238d51c14623aed476f226256342971d43d14157ae5856d095748"
+    }
+  }
+}
