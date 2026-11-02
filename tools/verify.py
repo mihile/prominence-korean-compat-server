@@ -11,7 +11,7 @@ def main():
     argfile=build/'test-compile.args';argfile.write_text('\n'.join('"'+s.replace('\\','/')+'"' for s in params),encoding='utf8')
     subprocess.run([str(args.java_home/'bin/javac.exe'),'@'+str(argfile)],check=True)
     results=[]
-    for name,params in [('UpdaterTests',[]),('VerifyBytecode',[str(classes)])]:
+    for name,params in [('UpdaterTests',[]),('VerifyBytecode',[str(classes)]),('HourglassGuardTests',[])]:
         p=subprocess.run([str(args.java_home/'bin/java.exe'),'-Xmx128m','-ea','-cp',str(tests)+os.pathsep+cp,name,*params],capture_output=True,text=True,encoding='utf8',errors='replace')
         (build/(name+'.log')).write_text(p.stdout+p.stderr,encoding='utf8');assert p.returncode==0,p.stdout+p.stderr
         line=p.stdout.strip().splitlines()[-1];print(line);results.append(line)
