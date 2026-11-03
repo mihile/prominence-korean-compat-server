@@ -1,0 +1,15 @@
+# Equipment stat audit and frost critical chance
+
+The installed Prominent 4.1.1, Spell Power 0.12.0, Simply Swords 1.70.2 and Soulslike Weaponry 1.3.1 native classes were inspected. Filename versions alone were not used to infer implementation.
+
+Four Prominent methods read `CRITICAL_CHANCE.attribute / 100`: FrostMageArmorSetBonus.applyChillingWinds, FrostDkArmorSetBonus.applyWinterDamage, RemorselessWinter.method_5572 and AgonizingBreath.method_5572. Spell Power's attribute baseline is 100, while its school API incorporates the configured base chance, subtracts the baseline and includes enchantment/provider contributions. With the installed 5% base chance and no modifiers, native code produces 100%, or 50% for the breath's intentional half-chance.
+
+The four narrowly guarded redirects supply `SpellPower.getSpellPower(FROST, caster).criticalChance() * 100` for the critical-chance attribute only. Existing divisions and the breath half-chance remain. Frost power and all other attribute reads pass through unchanged. Existing fixed critical damage multipliers remain ability-specific; this does not globally convert every proc to standard spell damage. Guards check exact hashes of all four targets and the three native Spell Power API classes. No original mod class is redistributed.
+
+Simply Swords' common ability/gem damage path reads the actor's current attack damage and current assigned-school Spell Power, applies configured diminishing returns to the spell branch and selects the larger branch. The configured global spell scaling multiplier is 0.5. Awakening/enchantment handling follows this path. This is stat scaling, but not additive attack-plus-spell damage. Non-damage control effects and configured cooldowns need not scale with player stats.
+
+Prominent's fire/arcane/frost set damage and Frostmourne frost/soul damage read the corresponding current school attributes. Its data-driven artifact spells follow Spell Engine school/coefficient definitions. Soulslike Weaponry contains explicitly configured fixed-base projectile abilities: MoonlightGreatsword sets a configured projectile damage and NonArrowProjectile uses projectile speed times this base, with native projectile critical behavior. That path is not an accidental missing read of the melee attack attribute and has not been globally buffed.
+
+Validation: four real native Mixin transforms and ASM verification; 20 production helper behavior checks against bounded attribute/API doubles; 132 updater checks; all 217 classes/1,137 methods verified; all prior 211 cumulative classes preserved byte-for-byte. These are offline checks, not a live combat test or a guarantee that every individual item/proc in the modpack has been behaviorally tested.
+
+Release build2026110305 uses the normal signed server feed, applied by the updater at the next normal server start. The separately installed wizard datapack was corrected to byte-identical official resources, including Blizzard cooldown 16; it is not distributed by this JAR.
