@@ -36,6 +36,8 @@ Prominence II **4.1.3 · Minecraft 1.20.1 · Fabric** 전용 서버용 누적 �
 
 4.1.5의 생명력 부적 제한은 해당 효과를 막되 이미 가진 부적이 삭제되지 않도록 처리합니다. 자세한 범위는 [생명력 부적 안내](docs/VITALITY_CHARM_BALANCE.md)를 확인하세요.
 
+Windows에서 spark의 상시 자동 Java 측정을 비활성화하고 장신구 슬롯 이름 처리의 반복 할당을 줄입니다. 수동 프로파일링과 TPS·MSPT 조회는 유지합니다. [검증과 설정](docs/SERVER_PROFILE_HOTPATHS.md).
+
 </details>
 
 <details>
