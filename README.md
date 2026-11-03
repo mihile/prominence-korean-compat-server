@@ -40,6 +40,8 @@ Windows에서 spark의 상시 자동 Java 측정을 비활성화하고 장신구
 
 Mythic Upgrades의 동일한 전역 장비 설정 갱신을 서버 틱당 한 번으로 줄입니다. [검증과 적용 범위](docs/MYTHIC_CONFIG_REFRESH.md).
 
+Prominent 퀘스트 조회의 중복 데이터 복사를 줄입니다. 진행·저장 동작은 유지합니다. [검증과 적용 범위](docs/QUEST_SNAPSHOT_COPY.md).
+
 </details>
 
 <details>
