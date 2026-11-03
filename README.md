@@ -38,6 +38,8 @@ Prominence II **4.1.3 · Minecraft 1.20.1 · Fabric** 전용 서버용 누적 �
 
 Windows에서 spark의 상시 자동 Java 측정을 비활성화하고 장신구 슬롯 이름 처리의 반복 할당을 줄입니다. 수동 프로파일링과 TPS·MSPT 조회는 유지합니다. [검증과 설정](docs/SERVER_PROFILE_HOTPATHS.md).
 
+Mythic Upgrades의 동일한 전역 장비 설정 갱신을 서버 틱당 한 번으로 줄입니다. [검증과 적용 범위](docs/MYTHIC_CONFIG_REFRESH.md).
+
 </details>
 
 <details>

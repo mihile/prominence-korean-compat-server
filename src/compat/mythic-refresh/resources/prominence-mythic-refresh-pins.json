@@ -1,0 +1,6 @@
+{
+  "net/trique/mythicupgrades/mixin/ServerWorldMixin.class": "cbfd092b1946fa84aef75e9ecc58102819579caccf8921c392f797186371bf18",
+  "net/trique/mythicupgrades/util/ItemEffectsListBuilder.class": "a809fe919757c5cd6a238405d5fdc2e2dca02a9ace228df3fe3909b09f3fda41",
+  "net/trique/mythicupgrades/util/MythicEffectVirtualItemHandler.class": "47d22203ab1e9b7d7f149ed00dd45951e44d2a3993f434c088bd28578fdabf0b",
+  "net/trique/mythicupgrades/item/MythicEffectsArmorItem.class": "846de9af0f807ce27c019b5fff80ebab7b903f269652eec68e9efe8eae1467a7"
+}
