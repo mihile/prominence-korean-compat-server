@@ -1,0 +1,1 @@
+package net.minecraft;public class class_238 {public final double x,y,z,w,h;public class_238(double x,double y,double z,double w,double h){this.x=x;this.y=y;this.z=z;this.w=w;this.h=h;}public class_238 method_989(double dx,double dy,double dz){return new class_238(x+dx,y+dy,z+dz,w,h);}public class_238 method_1011(double d){return new class_238(x,y+d,z,w-d*2,h-d*2);}}

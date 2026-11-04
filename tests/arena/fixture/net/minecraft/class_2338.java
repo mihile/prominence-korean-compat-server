@@ -1,0 +1,1 @@
+package net.minecraft;public class class_2338 {public int x,y,z;public static class_2338 method_49637(double x,double y,double z){var p=new class_2338();p.x=(int)Math.floor(x);p.y=(int)Math.floor(y);p.z=(int)Math.floor(z);return p;}}

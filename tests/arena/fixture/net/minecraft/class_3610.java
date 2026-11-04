@@ -1,0 +1,1 @@
+package net.minecraft;public class class_3610 {boolean empty;public class_3610(boolean e){empty=e;}public boolean method_15769(){return empty;}}

@@ -1,0 +1,1 @@
+package elocindev.prominentbase.mythicchallenge;import net.minecraft.*;public class MythicChallenge {public static final class_243 ARENA_ENTRY=new class_243(25,67,44);}

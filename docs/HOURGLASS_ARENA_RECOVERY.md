@@ -1,0 +1,7 @@
+# Hourglass arena player recovery
+
+The installed `rogues:shadow_step` and `spellbladenext:monkeydash` use Spell Engine's `BEHIND_TARGET` destination, 1.5 blocks behind the target. That branch searches for a block below but does not validate the player's destination collision volume. `wizards:arcane_blink` is another teleport route. ProminentBase's built-in bound enforcement handles spectators, not active players. The installed structure is 51 x 26 x 53 blocks with a roughly circular combat boundary; the native entry point is (25,67,44).
+
+A guarded server hook runs once per active MythicChallenge tick. Living non-spectators record a recent collision-free supported position inside the arena. A player embedded in blocks for three ticks or outside the outer circular boundary/below the floor is returned to a rechecked safe position; if unavailable, the native entry and nearby supported non-fluid positions are searched. If no clear position is available, recovery waits and retries. Teleport resets velocity and fall distance. Block collision uses the player's actual bounding box and does not treat other entities as walls. The repair is independent of the spell or movement source.
+
+The recovery applies to the installed arena layout and a version/class hash guard. A tiny fixture covers ordinary movement, brief overlaps, walls, outer corners, falling below the arena, spectators, unsafe former locations, missing history and retry. Actual native Mixin transformation and cumulative verification also run offline. In-game combat remains unverified.
