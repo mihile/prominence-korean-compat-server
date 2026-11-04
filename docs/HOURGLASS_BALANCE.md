@@ -2,7 +2,7 @@
 
 Server compatibility for ProminentBase 4.1.1 and Eldritch End 0.3.4, guarded by native class SHA-256 pins.
 
-- Faceless shadow-surge damage is multiplied by 1/3 (one ninth of player maximum health per hit before downstream damage handling).
+- Faceless shadow-surge damage is multiplied by 3/8 (one eighth of player maximum health per hit before downstream damage handling).
 - Hourglass boss HP uses the configured level-specific solo target times 0.8 times `1 + 0.8 * (actual players - 1)`, for primary and twin bosses. Original party-dependent damage remains unchanged.
 - Newly spawned mobs in the challenge world get a persistent 0.8 maximum-health multiplier. Affix add waves use the boss single-player baseline with the same 0.8 reduction, independently of party size.
 - During the Obsidilith fight, all mining fatigue is removed each challenge tick, including pre-existing effects and effects from other sources; Freezing Cold also stops reapplying it. Slowness and other boss fights are unchanged. The native rune block contains no mining-fatigue clearing logic.
