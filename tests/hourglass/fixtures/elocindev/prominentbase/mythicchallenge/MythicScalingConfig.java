@@ -1,0 +1,1 @@
+package elocindev.prominentbase.mythicchallenge; public class MythicScalingConfig {public double targetBossHp(int l,double t,int n,double b){return l*100.0*n*b;}}
