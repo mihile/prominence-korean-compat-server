@@ -1,0 +1,1 @@
+package mod.chloeprime.aaaparticles.api.client.effekseer;public class ParticleEmitter {public float x,y,z;public void setPosition(float a,float b,float c){x=a;y=b;z=c;}public void setRotation(float a,float b,float c){}}
