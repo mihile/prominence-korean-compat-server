@@ -3,7 +3,8 @@
     "elocindev/prominentbase/mythicchallenge/MythicChallenge.class": "05ff7d820c0a90a18f625258732034febda45ccd863b361ae7e6fa0cb70b0d99",
     "elocindev/prominentbase/mythicchallenge/MythicBossEntry.class": "a86826b193b8402fb8d86dcc5a4943220380a0e3f815f213206488ad1566ed9d",
     "elocindev/prominentbase/mythicchallenge/MythicScalingConfig.class": "5c43a90564a4d23087aefec5757f93406cc8a0928d8cd98caf36fcbbb4e96e34",
-    "elocindev/prominentbase/mythicchallenge/affix/MythicAffixController.class": "fb24faffc4cfd9a98a707371f6caae8848eb24193d94fe289c3cbc4add13a4c5"
+    "elocindev/prominentbase/mythicchallenge/affix/MythicAffixController.class": "fb24faffc4cfd9a98a707371f6caae8848eb24193d94fe289c3cbc4add13a4c5",
+    "elocindev/prominentbase/entity/nonliving/ChallengePortalEntity.class": "d6723b67604536db89fc0b28b8ca82b24cf7e8cc3b5d6a29f45c1d387bfc9341"
   },
   "eldritch_end": {
     "elocindev/eldritch_end/entity/faceless/FacelessEntity.class": "984122dc2c88b3e5a2b85222cf6208eb49705b46fdb27b2c05de0d8ca04f5c24"
