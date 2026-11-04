@@ -8,5 +8,10 @@
   },
   "eldritch_end": {
     "elocindev/eldritch_end/entity/faceless/FacelessEntity.class": "984122dc2c88b3e5a2b85222cf6208eb49705b46fdb27b2c05de0d8ca04f5c24"
+  },
+  "aaa_particles": {
+    "mod/chloeprime/aaaparticles/api/common/AAALevel.class": "676fa72ec62725cc099f113f035e3c7a54330cf0121f97e3cd08c4e5fb4d1893",
+    "mod/chloeprime/aaaparticles/api/common/ParticleEmitterInfo.class": "af4f2cd062384ca38cb9570326493bbd7b5bb9ddf39e43e3f899627b3074705d",
+    "mod/chloeprime/aaaparticles/common/network/S2CAddParticle.class": "8e49e0c0d44d84201492d418d0529737fd84fa09bcb00c17071168cd7bb132b9"
   }
 }

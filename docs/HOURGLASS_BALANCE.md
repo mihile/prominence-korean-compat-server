@@ -9,3 +9,5 @@ Server compatibility for ProminentBase 4.1.1 and Eldritch End 0.3.4, guarded by 
 - Existing mobs and bosses from challenges already in progress are not retroactively modified. Health attribute caps and effects from other mods can affect observed values.
 
 Offline checks cover native Mixin transformation, class pins, 20 level/party combinations and exception-safe spawn context, plus cumulative updater checks. The outdated portal notice about a five-player health rule is suppressed without changing boss damage scaling. They do not establish in-game behavior. Installed server JAR is not changed while running; signed updater applies this build at a later normal start.
+
+The original shadow-surge code sent a copied AAAParticles packet before calling bindOnEntity. The guarded correction binds before sending; the client also protects the active surge effect from premature memory-pressure eviction. GL errors were observed during the missing-effect session, so actual rendered output remains unverified.

@@ -4,14 +4,14 @@ import argparse,hashlib,json,os,subprocess,zipfile
 ROOT=Path(__file__).resolve().parents[1]
 def main():
  a=argparse.ArgumentParser()
- for n in ['jar','classpath','java-home','prominent','eldritch','output']:a.add_argument('--'+n,type=Path,required=True)
+ for n in ['jar','classpath','java-home','prominent','eldritch','output','aaa']:a.add_argument('--'+n,type=Path,required=True)
  x=a.parse_args();work=x.output.resolve();work.mkdir(parents=True,exist_ok=True);classes=work/'classes';classes.mkdir(exist_ok=True)
- cp=[str(x.jar.resolve()),str(x.prominent.resolve()),str(x.eldritch.resolve()),*json.loads(x.classpath.read_text('utf8'))]
+ cp=[str(x.jar.resolve()),str(x.prominent.resolve()),str(x.eldritch.resolve()),str(x.aaa.resolve()),*json.loads(x.classpath.read_text('utf8'))]
  def run(exe,args,name):
   f=work/(name+'.args');f.write_text('\n'.join('"'+str(s).replace('\\','/')+'"' for s in args),encoding='utf8')
   p=subprocess.run([str(x.java_home/'bin'/exe),'@'+str(f)],cwd=work,capture_output=True,text=True,encoding='utf8',errors='replace');(work/(name+'.log')).write_text(p.stdout+p.stderr,encoding='utf8');print(p.stdout,end='');assert p.returncode==0,p.stdout+p.stderr
  with zipfile.ZipFile(x.jar) as z:pins=json.loads(z.read('hourglass-pins.json'))
- for mod,path in [('prominentbase',x.prominent),('eldritch_end',x.eldritch)]:
+ for mod,path in [('prominentbase',x.prominent),('eldritch_end',x.eldritch),('aaa_particles',x.aaa)]:
   with zipfile.ZipFile(path) as z:
    for name,digest in pins[mod].items():assert hashlib.sha256(z.read(name)).hexdigest()==digest,(mod,name)
  print('PASS: all installed native class SHA256 pins match')

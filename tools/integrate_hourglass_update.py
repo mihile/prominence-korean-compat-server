@@ -18,7 +18,7 @@ def main():
     classes.mkdir(parents=True, exist_ok=True)
     source = ROOT / 'src/compat/hourglass-balance/java'
     sources = sorted(source.rglob('*.java'))
-    cp = ';'.join([str(args.base.resolve()), str((ROOT.parent / 'hourglass-balance-20261104/prominentbase.jar').resolve()), *json.loads(args.classpath.read_text('utf8'))])
+    cp = ';'.join([str(args.base.resolve()), str((ROOT.parent / 'hourglass-balance-20261104/prominentbase.jar').resolve()), str((ROOT.parent.parent / 'mods/aaa_particles-fabric-1.20.1-2.2.3.jar').resolve()), *json.loads(args.classpath.read_text('utf8'))])
     options = ['--release', '17', '-proc:none', '-encoding', 'UTF-8', '-cp', cp, '-d', str(classes.resolve()), *map(str, sources)]
     file = work / 'compile.args'
     file.write_text('\n'.join('"' + s.replace('\\', '/') + '"' for s in options), 'utf8')
@@ -35,7 +35,7 @@ def main():
     config = 'prominence-hourglass-balance.mixins.json'
     added[config] = enc({'required': True, 'minVersion': '0.8', 'compatibilityLevel': 'JAVA_17',
                          'package': 'local.prominence.hourglass.mixin', 'plugin': 'local.prominence.hourglass.BalanceGuard',
-                         'mixins': ['ChallengeMixin','BossMixin','AffixMixin','WorldMixin','FacelessMixin','PortalMixin'], 'injectors': {'defaultRequire': 1}})
+                         'mixins': ['ChallengeMixin','BossMixin','AffixMixin','WorldMixin','FacelessMixin','FacelessParticleMixin','PortalMixin'], 'injectors': {'defaultRequire': 1}})
     added['hourglass-pins.json'] = (ROOT / 'src/compat/hourglass-balance/resources/hourglass-pins.json').read_bytes()
     for p in sources:
         added['META-INF/prominence-korean-compat-source/hourglass-balance/' + p.relative_to(source).as_posix()] = p.read_bytes()
